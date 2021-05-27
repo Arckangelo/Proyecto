@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1051938064310",
+    "firebase_url": "https://adopet-13330-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "adopet-13330",
+    "storage_bucket": "adopet-13330.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051938064310:android:c6b165d8d039afb4bae317",
+        "android_client_info": {
+          "package_name": "com.vanegas.adopet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1051938064310-dh9vdgh6is3ac01vm7koe1id21no8852.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJrDhgRBZMkPCf2JFeqMzRlO24avK_7F4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1051938064310-dh9vdgh6is3ac01vm7koe1id21no8852.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
