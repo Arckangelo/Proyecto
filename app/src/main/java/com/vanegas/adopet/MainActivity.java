@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if(!queryDocumentSnapshots.isEmpty()){
                         Intent intent = new Intent(MainActivity.this, PantallaPrincipalActivity.class);
+                        intent.putExtra("Nombre",nombre.getText().toString().trim());
                         startActivity(intent);
                     }else{
                         error.setText("ø Datos incorrectos");
