@@ -2,14 +2,15 @@ package com.vanegas.adopet;
 
 public class MascotaVo {
 
-    private String nombre, raza, peso, fecna, animal, propietario;
+    private String id, nombre, raza, peso, fecna, animal, propietario;
     private boolean adoptable;
 
     public MascotaVo() {
 
     }
 
-    public MascotaVo(String nombre, String raza, String peso, String fecna, String animal, String propietario, boolean adoptable) {
+    public MascotaVo(String id, String nombre, String raza, String peso, String fecna, String animal, String propietario, boolean adoptable) {
+        this.id = id;
         this.nombre = nombre;
         this.raza = raza;
         this.peso = peso;
@@ -17,6 +18,14 @@ public class MascotaVo {
         this.animal = animal;
         this.propietario = propietario;
         this.adoptable = adoptable;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAnimal() {

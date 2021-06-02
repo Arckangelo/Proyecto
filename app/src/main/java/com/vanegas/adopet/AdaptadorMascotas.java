@@ -3,17 +3,16 @@ package com.vanegas.adopet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class AdaptadorMascotas extends RecyclerView.Adapter<AdaptadorMascotas.ViewHolderMascotas> implements View.OnClickListener {
+public class AdaptadorMascotas extends RecyclerView.Adapter<AdaptadorMascotas.ViewHolderMascotas> {
 
     ArrayList<MascotaVo> listaMascotas;
-    private View.OnClickListener listener;
+    private ClickListener listener;
 
     public AdaptadorMascotas(ArrayList<MascotaVo> listaMascotas) {
         this.listaMascotas = listaMascotas;
@@ -21,19 +20,14 @@ public class AdaptadorMascotas extends RecyclerView.Adapter<AdaptadorMascotas.Vi
 
     @Override
     public ViewHolderMascotas onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_mascota, null, false);
-
-        view.setOnClickListener(this);
-
+        LayoutInflater layoutinflater=LayoutInflater.from(parent.getContext());
+        View view = layoutinflater.inflate(R.layout.activity_item_mascota, parent, false);
         return new ViewHolderMascotas(view);
     }
 
     @Override
     public void onBindViewHolder(AdaptadorMascotas.ViewHolderMascotas holder, int position) {
-        holder.nombre.setText(listaMascotas.get(position).getNombre());
-        holder.raza.setText(listaMascotas.get(position).getRaza());
-        //holder.peso.setText(listaMascotas.get(position).getPeso());
-        holder.fecna.setText(listaMascotas.get(position).getFecna());
+        holder.bindItems(listaMascotas.get(position));
     }
 
     @Override
@@ -41,26 +35,44 @@ public class AdaptadorMascotas extends RecyclerView.Adapter<AdaptadorMascotas.Vi
         return listaMascotas.size();
     }
 
-    public void setOnClickListener(View.OnClickListener listener){
+    public MascotaVo getItem(int position){
+        return listaMascotas.get(position);
+    }
+
+    public void setOnClickListener(ClickListener listener){
         this.listener = listener;
     }
 
-    @Override
-    public void onClick(View v) {
-        if(listener!=null)
-            listener.onClick(v);
-    }
 
-    public class ViewHolderMascotas extends RecyclerView.ViewHolder {
+    public class ViewHolderMascotas extends RecyclerView.ViewHolder  implements View.OnClickListener{
 
         TextView nombre, raza, peso, fecna;
 
         public ViewHolderMascotas(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             nombre = (TextView) itemView.findViewById(R.id.tv_nombreMascotaItem);
             raza = (TextView) itemView.findViewById(R.id.tv_razaMascotaItem);
             //peso  = (TextView) itemView.findViewById(R.id.tv_pesoMascotaItem);
             fecna = (TextView) itemView.findViewById(R.id.tv_fecnaMascotaItem);
         }
+
+        @Override
+        public void onClick(View v) {
+            if(listener!=null)
+                listener.onItemClick(v,getAdapterPosition());
+        }
+
+        public void bindItems(MascotaVo mascotaVo) {
+            nombre.setText(mascotaVo.getNombre());
+            raza.setText(mascotaVo.getRaza());
+            fecna.setText(mascotaVo.getFecna());
+
+
+        }
+    }
+
+    public interface ClickListener{
+        public void onItemClick(View v,int position);
     }
 }

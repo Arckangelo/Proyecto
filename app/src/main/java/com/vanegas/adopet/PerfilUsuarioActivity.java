@@ -2,11 +2,13 @@ package com.vanegas.adopet;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -65,7 +67,12 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
+        Intent intent, intentP;
+        intentP = getIntent();
+        String nombreUsuario = intentP.getStringExtra("Nombre");
+
+        Log.d("Nombre de usuario: ", nombreUsuario);
+
         switch (item.getItemId()) {
             case R.id.menu_btn_logout:
                 intent = new Intent(PerfilUsuarioActivity.this, MainActivity.class);
@@ -73,11 +80,11 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_btn_pantallaPrincipal:
                 intent = new Intent(PerfilUsuarioActivity.this, PantallaPrincipalActivity.class);
+                intent.putExtra("Nombre", nombreUsuario);
                 startActivity(intent);
                 return true;
             case R.id.menu_btn_perfil:
-                intent = new Intent(PerfilUsuarioActivity.this, PerfilUsuarioActivity.class);
-                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "Ya estás en tu perfil", Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

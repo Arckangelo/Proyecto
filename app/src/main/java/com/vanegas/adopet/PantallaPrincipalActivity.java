@@ -28,11 +28,10 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
 
     ArrayList<MascotaVo> listaMascotas = new ArrayList<>();
     RecyclerView recyclerMascotas;
-    Intent intent;
     Spinner spinner;
     String[] animal = {"Seleccione un animal", "Perro", "Gato", "Pájaro", "Conejo"};
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    AdaptadorMascotas adapter = new AdaptadorMascotas(listaMascotas);
+    static AdaptadorMascotas adapter = new AdaptadorMascotas( new ArrayList<>());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +43,6 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
         spinner = (Spinner) findViewById(R.id.spinner_pantallaPrincipal);
         recyclerMascotas.setLayoutManager(new LinearLayoutManager(this));
         recyclerMascotas.setAdapter(adapter);
-        intent = new Intent(this, PerfilMascotaActivity.class);
 
         spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, animal));
 
@@ -65,8 +63,9 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
 
                             if (!queryDocumentSnapshots.isEmpty())
                                 for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                    lista.add(new MascotaVo(document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), true));
+                                    lista.add(new MascotaVo(document.getId(), document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), (document.getData().get("adoptable").equals("true"))));
                                 }
+
 
                             adapter = new AdaptadorMascotas(lista);
                             recyclerMascotas.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -96,11 +95,11 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
 
                 if (!queryDocumentSnapshots.isEmpty())
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        lista.add(new MascotaVo(document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), true));
+                        lista.add(new MascotaVo(document.getId(), document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), (document.getData().get("adoptable").equals("true"))));
                     }
 
-                adapter = new AdaptadorMascotas(lista);
                 recyclerMascotas.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                adapter = new AdaptadorMascotas(lista);
                 recyclerMascotas.setAdapter(adapter);
                 recyclerClick();
             }
@@ -108,20 +107,28 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
     }
 
     public void recyclerClick(){
-        adapter.setOnClickListener(new View.OnClickListener() {
+        Intent datosMascota = new Intent(getBaseContext(), PerfilMascotaActivity.class), intentP;
+        intentP = getIntent();
+        String nombreUsuario = intentP.getStringExtra("Nombre");
+        adapter.setOnClickListener(new AdaptadorMascotas.ClickListener(){
+
             @Override
-            public void onClick(View v) {
-                intent.putExtra("Nombre", listaMascotas.get(recyclerMascotas.getChildAdapterPosition(v)).getNombre().toString());
-                intent.putExtra("Raza", listaMascotas.get(recyclerMascotas.getChildAdapterPosition(v)).getRaza().toString());
-                intent.putExtra("Peso", listaMascotas.get(recyclerMascotas.getChildAdapterPosition(v)).getPeso()).toString();
-                intent.putExtra("Fecna", listaMascotas.get(recyclerMascotas.getChildAdapterPosition(v)).getFecna().toString());
-                startActivity(intent);
+            public void onItemClick(View v, int position) {
+                //Toast.makeText(getApplicationContext(),adapter.getItem(position).getAnimal(), Toast.LENGTH_SHORT).show();
+                MascotaVo mascotaVo = adapter.getItem(position);
+                datosMascota.putExtra("id", mascotaVo.getId());
+                datosMascota.putExtra("Nombre", nombreUsuario);
+               startActivity(datosMascota);
             }
         });
     }
 
     public void anadirMascota(View view) {
+        Intent intentP;
+        intentP = getIntent();
+        String nombreUsuario = intentP.getStringExtra("Nombre");
         Intent intent = new Intent(PantallaPrincipalActivity.this, AnadirMascotaActivity.class);
+        intent.putExtra("Nombre", nombreUsuario);
         startActivity(intent);
     }
 
@@ -143,8 +150,7 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.menu_btn_pantallaPrincipal:
-                intent = new Intent(PantallaPrincipalActivity.this, PantallaPrincipalActivity.class);
-                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "Ya estás la pantalla principal", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.menu_btn_perfil:
                 intent = new Intent(PantallaPrincipalActivity.this, PerfilUsuarioActivity.class);
