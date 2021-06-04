@@ -1,8 +1,7 @@
-package com.vanegas.adopet;
+package com.vanegas.adopet.usuario;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,8 +13,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.vanegas.adopet.MainActivity;
+import com.vanegas.adopet.recyclerview.PantallaPrincipalActivity;
+import com.vanegas.adopet.R;
 
-import java.io.Console;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,6 @@ public class RegistroActivity extends AppCompatActivity {
     EditText nombre, apellidos, email, direccion, usuario, password, password2;
     TextView errorEmail, errorUsuario, errorPassword;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    boolean errorUser = false, erroremail = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +46,7 @@ public class RegistroActivity extends AppCompatActivity {
 
     public void loginRegistro(View view){
         Intent intent = new Intent(RegistroActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -70,16 +71,42 @@ public class RegistroActivity extends AppCompatActivity {
 
         if(!errores(view)){
             db.collection("propietario")
-                    .add(user)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Toast.makeText(getApplicationContext(),"Usuario añadida correctamente", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(RegistroActivity.this, PantallaPrincipalActivity.class);
-                            intent.putExtra("Nombre",usuario.getText().toString().trim());
-                            startActivity(intent);
-                        }
-                    });
+                    .whereEqualTo("usuario", usuario.getText().toString().trim())
+                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if(!queryDocumentSnapshots.isEmpty()){
+                        errorUsuario.setText("ø Usuario ya usado");
+                        errorUsuario.setVisibility(view.VISIBLE);
+                    }else{
+                        db.collection("propietario")
+                                .whereEqualTo("email", email.getText().toString().trim())
+                                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                if(!queryDocumentSnapshots.isEmpty()){
+                                    errorEmail.setText("ø Email ya usado");
+                                    errorEmail.setVisibility(view.VISIBLE);
+                                }else{
+                                    db.collection("propietario")
+                                            .add(user)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    Toast.makeText(getApplicationContext(),"Usuario añadido correctamente", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(RegistroActivity.this, PantallaPrincipalActivity.class);
+                                                    intent.putExtra("Nombre",usuario.getText().toString().trim());
+                                                    startActivity(intent);
+                                                }
+                                            });
+                                }
+                            }
+                        });
+                    }
+                }
+            });
         }
     }
 
@@ -90,11 +117,6 @@ public class RegistroActivity extends AppCompatActivity {
         errorEmail.setVisibility(view.GONE);
         errorUsuario.setVisibility(view.GONE);
 
-        consultaBD();
-
-        Toast.makeText(getApplicationContext(),"Error usuario: " +errorUser, Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(),"Error email: " + erroremail, Toast.LENGTH_SHORT).show();
-
         if(nombre.getText().toString().isEmpty() || email.getText().toString().isEmpty() || direccion.getText().toString().isEmpty() || usuario.getText().toString().isEmpty() || password.getText().toString().isEmpty() || password2.getText().toString().isEmpty()){
             errorPassword.setText("ø Debe introducir los datos necesarios");
             errorPassword.setVisibility(view.VISIBLE);
@@ -103,17 +125,9 @@ public class RegistroActivity extends AppCompatActivity {
             errorPassword.setText("ø El nombre es demasiado corto");
             errorPassword.setVisibility(view.VISIBLE);
             error = true;
-        }else if(!email.getText().toString().contains("@")) {
+        }else if(!email.getText().toString().contains("@gmail.com") && !email.getText().toString().contains("@hotmail.com") && !email.getText().toString().contains("@outlook.com") && !email.getText().toString().contains("@yahoo.com")) {
             errorEmail.setText("ø El email no tiene el formato correcto");
             errorEmail.setVisibility(view.VISIBLE);
-            error = true;
-        }else if(erroremail){
-            errorEmail.setText("ø Email ya usado");
-            errorEmail.setVisibility(view.VISIBLE);
-            error = true;
-        }else if(errorUser){ // Comprobar que no hya otro usuario igual
-            errorUsuario.setText("ø Usuario ya usado");
-            errorUsuario.setVisibility(view.VISIBLE);
             error = true;
         }else if(!password.getText().toString().equals(password2.getText().toString())){
             errorPassword.setText("ø Las contraseñas no coinciden");
@@ -122,41 +136,5 @@ public class RegistroActivity extends AppCompatActivity {
         }
 
         return error;
-    }
-
-    private void consultaBD() {
-        db.collection("propietario")
-                .whereEqualTo("usuario", usuario.getText().toString().trim())
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    setErrorUser(true);
-                    Toast.makeText(getApplicationContext(),"Usuario ya usado", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        db.collection("propietario")
-                .whereEqualTo("email", email.getText().toString().trim())
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    setErrorEmail(true);
-                    Toast.makeText(getApplicationContext(),"Email ya usado", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    public void setErrorUser(boolean errorUser) {
-        this.errorUser = errorUser;
-    }
-
-    public void setErrorEmail(boolean erroremail) {
-        this.erroremail = erroremail;
     }
 }

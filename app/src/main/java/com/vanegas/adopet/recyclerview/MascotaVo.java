@@ -1,4 +1,4 @@
-package com.vanegas.adopet;
+package com.vanegas.adopet.recyclerview;
 
 public class MascotaVo {
 

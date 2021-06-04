@@ -1,4 +1,4 @@
-package com.vanegas.adopet;
+package com.vanegas.adopet.mascota;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,17 +13,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.vanegas.adopet.MainActivity;
+import com.vanegas.adopet.recyclerview.MascotaVo;
+import com.vanegas.adopet.recyclerview.PantallaPrincipalActivity;
+import com.vanegas.adopet.usuario.PerfilUsuarioActivity;
+import com.vanegas.adopet.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,7 +37,7 @@ public class AnadirMascotaActivity extends AppCompatActivity {
     TextView errorDatos;
     EditText nombre, peso, fecna, raza;
     Spinner spinner;
-    String[] animal = { "Seleccione un animal", "Perro", "Gato", "Pájaro", "Conejo"};
+    String[] animal = {"Seleccione un animal", "Perro", "Gato", "Pájaro", "Conejo"};
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     String id;
 
@@ -54,10 +57,14 @@ public class AnadirMascotaActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     public void anadirMascota(View view) {
         Intent intentP = getIntent();
         String nombreUsuario = intentP.getStringExtra("Nombre");
-        if(!errores(view)){
+        if (!errores(view)) {
             Map<String, Object> mascota = new HashMap<>();
             mascota.put("nombre", nombre.getText().toString());
             mascota.put("animal", spinner.getSelectedItem().toString());
@@ -67,90 +74,83 @@ public class AnadirMascotaActivity extends AppCompatActivity {
             mascota.put("idPropietario", nombreUsuario);
             mascota.put("adoptable", true);
 
-           /* Log.d("Existe mascota: ", (consulta(mascota)) ? "Si" : "No");
+            db.collection("mascota")
+                    .whereEqualTo("nombre", mascota.get("nombre").toString())
+                    .whereEqualTo("animal", mascota.get("animal").toString())
+                    .whereEqualTo("raza", mascota.get("raza").toString())
+                    .whereEqualTo("peso", mascota.get("peso").toString())
+                    .whereEqualTo("fecna", mascota.get("fecna").toString())
+                    .whereEqualTo("idPropietario", mascota.get("idPropietario").toString())
+                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
 
-            Log.d("Id mascota: ", id);
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-            if(consulta(mascota)){
-                db.collection("mascota").document(id)
-                        .set(mascota);
+                    if (!queryDocumentSnapshots.isEmpty()){
 
-                Toast toast1 = Toast.makeText(getApplicationContext(),"Ya existe una mascota con esos mismo datos", Toast.LENGTH_SHORT);
-                toast1.show();
+                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                            id = document.getId();
+                        }
 
-                Intent intent = new Intent(AnadirMascotaActivity.this, PantallaPrincipalActivity.class);
-                startActivity(intent);
-            }else{*/
-                db.collection("mascota")
-                        .add(mascota)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        db.collection("mascota").document(id)
+                                .set(mascota).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Toast toast1 = Toast.makeText(getApplicationContext(),"Mascota añadida correctamente", Toast.LENGTH_SHORT);
-                                toast1.show();
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(getApplicationContext(),"Ya existe una mascota con esos datos", Toast.LENGTH_SHORT).show();
+
                                 Intent intent = new Intent(AnadirMascotaActivity.this, PantallaPrincipalActivity.class);
                                 intent.putExtra("Nombre", nombreUsuario);
                                 startActivity(intent);
                             }
                         });
-            //}
+                    }else{
+                        db.collection("mascota")
+                                .add(mascota)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        Toast.makeText(getApplicationContext(), "Mascota añadida correctamente", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(AnadirMascotaActivity.this, PantallaPrincipalActivity.class);
+                                        intent.putExtra("Nombre", nombreUsuario);
+                                        startActivity(intent);
+                                    }
+                                });
+                    }
+                }
+            });
         }
     }
 
-   /* private boolean consulta(Map<String, Object> mascota) {
-
-        final boolean[] opc = {false};
-
-        db.collection("mascota")
-                .whereEqualTo("nombre", mascota.get("nombre").toString())
-                .whereEqualTo("animal", mascota.get("animal").toString())
-                .whereEqualTo("raza", mascota.get("raza").toString())
-                .whereEqualTo("peso", mascota.get("peso").toString())
-                .whereEqualTo("fecna", mascota.get("fecna").toString())
-                .whereEqualTo("idPropietario", mascota.get("idPropietario").toString())
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                ArrayList<MascotaVo> lista = new ArrayList<>();
-
-                if (!queryDocumentSnapshots.isEmpty()){
-                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        id = document.getId();
-                    }
-                    opc[0] = true;
-                }
-            }
-        });
-
-        return opc[0];
-    }*/
-
-    public boolean errores(View view)  {
+    public boolean errores(View view) {
         boolean error = false;
-
         Date fecha = new Date(), fechaactual = new Date();
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String fechaActual = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-        try {
-            fecha = format.parse(fecna.getText().toString());
-            fechaactual = format.parse(fechaActual);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         errorDatos.setVisibility(view.GONE);
 
-        if(nombre.getText().toString().isEmpty() || peso.getText().toString().isEmpty() || fecna.getText().toString().isEmpty() || raza.getText().toString().isEmpty() || spinner.getSelectedItemPosition() == 0){
+        if(!fecna.getText().toString().contains("/") || fecna.getText().toString().length() != 10){
+            errorDatos.setText("ø La fecha de nacimiento no tiene el formato adecuado");
+            errorDatos.setVisibility(view.VISIBLE);
+            error = true;
+        }else{
+            try {
+                fecha = format.parse(fecna.getText().toString());
+                fechaactual = format.parse(fechaActual);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (nombre.getText().toString().isEmpty() || peso.getText().toString().isEmpty() || fecna.getText().toString().isEmpty() || raza.getText().toString().isEmpty() || spinner.getSelectedItemPosition() == 0) {
             errorDatos.setText("ø Debe introducir los datos necesarios");
             errorDatos.setVisibility(view.VISIBLE);
             error = true;
-        }else if(Float.parseFloat(peso.getText().toString()) == 0){
+        } else if (Float.parseFloat(peso.getText().toString()) == 0) {
             errorDatos.setText("ø El peso no puede ser 0");
             errorDatos.setVisibility(view.VISIBLE);
             error = true;
-        }else if(fecha.after(fechaactual)){
+        } else if (fecha.after(fechaactual)) {
             errorDatos.setText("ø La fecha de nacimiento no puede ser mayor a la actual");
             errorDatos.setVisibility(view.VISIBLE);
             error = true;
@@ -169,11 +169,10 @@ public class AnadirMascotaActivity extends AppCompatActivity {
         intentP = getIntent();
         String nombreUsuario = intentP.getStringExtra("Nombre");
 
-        Log.d("Nombre de usuario: ", nombreUsuario);
-
         switch (item.getItemId()) {
             case R.id.menu_btn_logout:
                 intent = new Intent(AnadirMascotaActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
             case R.id.menu_btn_pantallaPrincipal:

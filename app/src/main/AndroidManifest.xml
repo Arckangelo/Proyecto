@@ -20,23 +20,23 @@
             </intent-filter>
         </activity>
 	<activity
-            android:name=".RegistroActivity"
+            android:name=".usuario.RegistroActivity"
             android:label="AdoPet" >
         </activity>
         <activity
-            android:name=".PantallaPrincipalActivity"
+            android:name=".recyclerview.PantallaPrincipalActivity"
             android:label="AdoPet" >
         </activity>
         <activity
-            android:name=".AnadirMascotaActivity"
+            android:name=".mascota.AnadirMascotaActivity"
             android:label="AdoPet" >
         </activity>
         <activity
-            android:name=".PerfilUsuarioActivity"
+            android:name=".usuario.PerfilUsuarioActivity"
             android:label="AdoPet" >
         </activity>
         <activity
-            android:name=".PerfilMascotaActivity"
+            android:name=".mascota.PerfilMascotaActivity"
             android:label="AdoPet" >
         </activity>
     </application>

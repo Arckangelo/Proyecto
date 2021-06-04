@@ -1,4 +1,4 @@
-package com.vanegas.adopet;
+package com.vanegas.adopet.recyclerview;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,10 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.vanegas.adopet.MainActivity;
+import com.vanegas.adopet.R;
+import com.vanegas.adopet.mascota.AnadirMascotaActivity;
+import com.vanegas.adopet.mascota.PerfilMascotaActivity;
+import com.vanegas.adopet.usuario.PerfilUsuarioActivity;
 
-import java.io.Console;
 import java.util.ArrayList;
 
 public class PantallaPrincipalActivity extends AppCompatActivity {
@@ -84,6 +87,9 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() { }
+
     private void llenarMascotas() {
 
         db.collection("mascota").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -114,7 +120,6 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(View v, int position) {
-                //Toast.makeText(getApplicationContext(),adapter.getItem(position).getAnimal(), Toast.LENGTH_SHORT).show();
                 MascotaVo mascotaVo = adapter.getItem(position);
                 datosMascota.putExtra("id", mascotaVo.getId());
                 datosMascota.putExtra("Nombre", nombreUsuario);
@@ -142,11 +147,10 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
         intentP = getIntent();
         String nombreUsuario = intentP.getStringExtra("Nombre");
 
-        Log.d("Nombre de usuario: ", nombreUsuario);
-
         switch (item.getItemId()) {
             case R.id.menu_btn_logout:
                 intent = new Intent(PantallaPrincipalActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
             case R.id.menu_btn_pantallaPrincipal:

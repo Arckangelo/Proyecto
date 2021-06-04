@@ -1,4 +1,4 @@
-package com.vanegas.adopet;
+package com.vanegas.adopet.mascota;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,25 +8,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-
-import org.w3c.dom.Text;
+import com.vanegas.adopet.MainActivity;
+import com.vanegas.adopet.recyclerview.PantallaPrincipalActivity;
+import com.vanegas.adopet.usuario.PerfilUsuarioActivity;
+import com.vanegas.adopet.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -74,34 +72,38 @@ public class PerfilMascotaActivity extends AppCompatActivity {
 
                 if (propietario.getText().toString().equals(usuario)) {
                     adoptar.setText("Editar");
+                    borrar.setClickable(true);
                 } else {
                     adoptar.setText("Adoptar");
+                    borrar.setClickable(false);
+                    nombre.setFocusable(false);
+                    raza.setFocusable(false);
+                    peso.setFocusable(false);
+                    fecna.setFocusable(false);
                 }
 
-                if (documentSnapshot.getData().get("adoptable").toString() == "true") {
+                if (documentSnapshot.getData().get("adoptable").toString().equals("true")) {
                     adoptable.setText("Adoptable");
+                    adoptar.setClickable(true);
                 } else {
                     adoptable.setText("No adoptable");
-                    borrar.setClickable(false);
+                    adoptar.setClickable(false);
                 }
             }
         });
     }
+
+    @Override
+    public void onBackPressed() { }
 
     public void adoptarEditar(View view) {
         if (adoptar.getText().toString().equals("Editar")) {
             if (!errores(view)) {
                 Map<String, Object> mascota = new HashMap<>();
                 mascota.put("nombre", nombre.getText().toString());
-                //mascota.put("animal", animal);
                 mascota.put("raza", raza.getText().toString());
                 mascota.put("peso", peso.getText().toString());
                 mascota.put("fecna", fecna.getText().toString());
-           /* mascota.put("idPropietario", propietario.getText().toString());
-            if(adoptable.getText().toString().equals("Adoptable"))
-                mascota.put("adoptable", true);
-            else
-                mascota.put("adoptable", false);*/
 
                 db.collection("mascota").document(id)
                         .set(mascota, SetOptions.merge())
@@ -117,11 +119,6 @@ public class PerfilMascotaActivity extends AppCompatActivity {
             }
         } else if (adoptar.getText().toString().equals("Adoptar")) {
             Map<String, Object> mascota = new HashMap<>();
-            /*mascota.put("nombre", nombre.getText().toString());
-            mascota.put("animal", animal);
-            mascota.put("peso", peso.getText().toString());
-            mascota.put("fecna", fecna.getText().toString());
-            mascota.put("raza", raza.getText().toString());*/
             mascota.put("idPropietario", usuario);
             mascota.put("adoptable", false);
 
@@ -153,18 +150,24 @@ public class PerfilMascotaActivity extends AppCompatActivity {
 
     public boolean errores(View view) {
         boolean error = false;
-
         Date fecha = new Date(), fechaactual = new Date();
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String fechaActual = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-        try {
-            fecha = format.parse(fecna.getText().toString());
-            fechaactual = format.parse(fechaActual);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         errorDatos.setVisibility(view.GONE);
+
+        if(!fecna.getText().toString().contains("/") || fecna.getText().toString().length() != 10){
+            errorDatos.setText("ø La fecha de nacimiento no tiene el formato adecuado");
+            errorDatos.setVisibility(view.VISIBLE);
+            error = true;
+        }else{
+            try {
+                fecha = format.parse(fecna.getText().toString());
+                fechaactual = format.parse(fechaActual);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (nombre.getText().toString().isEmpty() || peso.getText().toString().isEmpty() || fecna.getText().toString().isEmpty() || raza.getText().toString().isEmpty()) {
             errorDatos.setText("ø Debe introducir los datos necesarios");
@@ -193,11 +196,10 @@ public class PerfilMascotaActivity extends AppCompatActivity {
         intentP = getIntent();
         String nombreUsuario = intentP.getStringExtra("Nombre");
 
-        Log.d("Nombre de usuario: ", nombreUsuario);
-
         switch (item.getItemId()) {
             case R.id.menu_btn_logout:
                 intent = new Intent(PerfilMascotaActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
             case R.id.menu_btn_pantallaPrincipal:
