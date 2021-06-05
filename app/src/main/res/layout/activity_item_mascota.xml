@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Nombre"
+                android:textColor="@color/purple_700"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -43,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="Raza: "
+                    android:textColor="@color/purple_700"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -53,6 +55,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="5dp"
                     android:text="Angora"
+                    android:textColor="@color/orange"
                     android:textSize="15sp" />
 
                 <TextView
@@ -60,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="Fech Nac: "
+                    android:textColor="@color/purple_700"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -71,6 +75,7 @@
                     android:layout_marginRight="10dp"
                     android:inputType="textImeMultiLine"
                     android:text="01/01/2021"
+                    android:textColor="@color/orange"
                     android:textSize="15sp" />
 
             </LinearLayout>

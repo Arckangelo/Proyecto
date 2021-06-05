@@ -66,7 +66,13 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
 
                             if (!queryDocumentSnapshots.isEmpty())
                                 for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                    lista.add(new MascotaVo(document.getId(), document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), (document.getData().get("adoptable").equals("true"))));
+                                    int foto;
+                                    if(document.getData().get("animal").toString().toLowerCase().equals("pájaro"))
+                                        foto = getResources().getIdentifier("pajaro", "drawable", getPackageName());
+                                    else
+                                        foto = getResources().getIdentifier(document.getData().get("animal").toString().toLowerCase(), "drawable", getPackageName());
+
+                                    lista.add(new MascotaVo(document.getId(), document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), (document.getData().get("adoptable").equals("true")), foto));
                                 }
 
 
@@ -101,7 +107,13 @@ public class PantallaPrincipalActivity extends AppCompatActivity {
 
                 if (!queryDocumentSnapshots.isEmpty())
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        lista.add(new MascotaVo(document.getId(), document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), (document.getData().get("adoptable").equals("true"))));
+                        int foto;
+                        if(document.getData().get("animal").toString().toLowerCase().equals("pájaro"))
+                            foto = getResources().getIdentifier("pajaro", "drawable", getPackageName());
+                        else
+                            foto = getResources().getIdentifier(document.getData().get("animal").toString().toLowerCase(), "drawable", getPackageName());
+
+                        lista.add(new MascotaVo(document.getId(), document.getData().get("nombre").toString(), document.getData().get("raza").toString(), document.getData().get("peso").toString(), document.getData().get("fecna").toString(), document.getData().get("animal").toString(), document.getData().get("idPropietario").toString(), (document.getData().get("adoptable").equals("true")), foto));
                     }
 
                 recyclerMascotas.setLayoutManager(new LinearLayoutManager(getApplicationContext()));

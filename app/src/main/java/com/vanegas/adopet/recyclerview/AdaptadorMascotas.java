@@ -3,6 +3,7 @@ package com.vanegas.adopet.recyclerview;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,14 +50,15 @@ public class AdaptadorMascotas extends RecyclerView.Adapter<AdaptadorMascotas.Vi
     public class ViewHolderMascotas extends RecyclerView.ViewHolder  implements View.OnClickListener{
 
         TextView nombre, raza, peso, fecna;
+        ImageView foto;
 
         public ViewHolderMascotas(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             nombre = (TextView) itemView.findViewById(R.id.tv_nombreMascotaItem);
             raza = (TextView) itemView.findViewById(R.id.tv_razaMascotaItem);
-            //peso  = (TextView) itemView.findViewById(R.id.tv_pesoMascotaItem);
             fecna = (TextView) itemView.findViewById(R.id.tv_fecnaMascotaItem);
+            foto = (ImageView) itemView.findViewById(R.id.iv_imagenMascotaItem);
         }
 
         @Override
@@ -69,8 +71,7 @@ public class AdaptadorMascotas extends RecyclerView.Adapter<AdaptadorMascotas.Vi
             nombre.setText(mascotaVo.getNombre());
             raza.setText(mascotaVo.getRaza());
             fecna.setText(mascotaVo.getFecna());
-
-
+            foto.setImageResource(mascotaVo.getFoto());
         }
     }
 

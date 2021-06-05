@@ -3,13 +3,14 @@ package com.vanegas.adopet.recyclerview;
 public class MascotaVo {
 
     private String id, nombre, raza, peso, fecna, animal, propietario;
+    private int foto;
     private boolean adoptable;
 
     public MascotaVo() {
 
     }
 
-    public MascotaVo(String id, String nombre, String raza, String peso, String fecna, String animal, String propietario, boolean adoptable) {
+    public MascotaVo(String id, String nombre, String raza, String peso, String fecna, String animal, String propietario, boolean adoptable, int foto) {
         this.id = id;
         this.nombre = nombre;
         this.raza = raza;
@@ -18,6 +19,7 @@ public class MascotaVo {
         this.animal = animal;
         this.propietario = propietario;
         this.adoptable = adoptable;
+        this.foto = foto;
     }
 
     public String getId() {
@@ -82,5 +84,13 @@ public class MascotaVo {
 
     public void setFecna(String fecna) {
         this.fecna = fecna;
+    }
+
+    public int getFoto() {
+        return foto;
+    }
+
+    public void setFoto(int foto) {
+        this.foto = foto;
     }
 }
